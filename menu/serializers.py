@@ -43,7 +43,7 @@ class ProductSerializer(serializers.ModelSerializer):
         "get_image", 
         "get_thumbnail")
         
-class InfoSerializer(serializers.ModelZerializer):
+class InfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Info
         fields = ("id", "name", "text")

@@ -8,7 +8,7 @@ class Menu(models.Model):
     name = models.CharField(max_length = 32, default = "Category name", unique = True)
     link = models.SlugField(unique = True)
     image = models.ImageField(upload_to = "images/menu")
-    order = models.IntegerField(unique = True, required = True)
+    order = models.IntegerField(unique = True)
     
     class Meta:
         ordering = ("order",)
@@ -29,7 +29,7 @@ class Category(models.Model):
     name = models.CharField(max_length = 32, default = "Group name", unique = True)
     link = models.SlugField(unique = True)
     image = models.ImageField(upload_to = "images/menu")
-    order = models.IntegerField(unique = True, required = True)
+    order = models.IntegerField(unique = True)
     
     class Meta:
         ordering = ("order",)
@@ -50,7 +50,7 @@ class Group(models.Model):
     name = models.CharField(max_length = 32, default = "Products name", unique = True)
     link = models.SlugField(unique = True)
     image = models.ImageField(upload_to = "images/menu")
-    order = models.IntegerField(unique = True, required = True)
+    order = models.IntegerField(unique = True)
     
     class Meta:
         ordering = ("order",)
@@ -99,7 +99,7 @@ class Product(models.Model):
                 self.save()
                 return SITE_ADDR + self.thumbnail.url
             else:
-                return: ""
+                return ""
                 
     def make_thumbnail(self, image, size=(300, 200)):
         img = Image.open(image)

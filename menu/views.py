@@ -1,17 +1,18 @@
 from django.shortcuts import render
-from rest.framework import generics
+from rest_framework import generics
+from rest_framework.views import APIView
 from .serializers import *
 from .models import *
 
-class MenuView(generics.ListView):
+class MenuView(generics.ListAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
     
-class CategoryView(generics.ListView):
+class CategoryView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     
-class GroupView(generics.ListView):
+class GroupView(generics.ListAPIView):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     
