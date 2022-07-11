@@ -111,5 +111,5 @@ class Product(models.Model):
         return thumbnail
         
 class Info(models.Model):
-    name = models.CharField()
-    text = models.TextField()
+    name = models.CharField(max_length = 250)
+    text = models.TextField(max_length = 5000)

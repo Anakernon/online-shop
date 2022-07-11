@@ -28,6 +28,6 @@ class ProductView(APIView):
         serializer = ProductSerializer(product)
         return Response(serializer.data)
     
-class InfoView(generics.View):
+class InfoView(APIView):
     queryset = Info.objects.all()
     serializer_class =InfoSerializer
