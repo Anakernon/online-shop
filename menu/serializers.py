@@ -46,4 +46,4 @@ class ProductSerializer(serializers.ModelSerializer):
 class InfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Info
-        fields = ("id", "name", "text")
+        fields = ("name", "text")

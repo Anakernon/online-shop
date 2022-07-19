@@ -7,8 +7,8 @@ SITE_ADDR = "localhost:8000"
 class Menu(models.Model):
     name = models.CharField(max_length = 32, default = "Category name", unique = True)
     link = models.SlugField(unique = True)
-    image = models.ImageField(upload_to = "images/menu")
-    order = models.IntegerField(unique = True)
+    image = models.ImageField(upload_to = "menu/images/menu")
+    order = models.IntegerField(unique = False)
     
     class Meta:
         ordering = ("order",)
@@ -28,8 +28,8 @@ class Category(models.Model):
     menu = models.ForeignKey(Menu, related_name = "category", on_delete = models.CASCADE)
     name = models.CharField(max_length = 32, default = "Group name", unique = True)
     link = models.SlugField(unique = True)
-    image = models.ImageField(upload_to = "images/menu")
-    order = models.IntegerField(unique = True)
+    image = models.ImageField(upload_to = "menu/images/menu")
+    order = models.IntegerField(unique = False)
     
     class Meta:
         ordering = ("order",)
@@ -49,8 +49,8 @@ class Group(models.Model):
     category = models.ForeignKey(Category, related_name = "group", on_delete = models.CASCADE)
     name = models.CharField(max_length = 32, default = "Products name", unique = True)
     link = models.SlugField(unique = True)
-    image = models.ImageField(upload_to = "images/menu")
-    order = models.IntegerField(unique = True)
+    image = models.ImageField(upload_to = "menu/images/menu")
+    order = models.IntegerField(unique = False)
     
     class Meta:
         ordering = ("order",)
@@ -70,8 +70,8 @@ class Product(models.Model):
     group = models.ForeignKey(Group, related_name = "product", on_delete = models.CASCADE)
     name = models.CharField(max_length = 50, default = "Product name", unique = True)
     link = models.SlugField(unique = True)
-    image = models.ImageField(upload_to = "images/products")
-    thumbnail = models.ImageField(upload_to = "images/products")
+    image = models.ImageField(upload_to = "menu/images/products")
+    thumbnail = models.ImageField(upload_to = "menu/images/products")
     description = models.TextField(blank = True, null = True)
     price = models.DecimalField(max_digits = 7, decimal_places = 2)
     date_added = models.DateTimeField(auto_now_add = True)
