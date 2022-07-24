@@ -3,12 +3,12 @@ from PIL import Image
 from io import BytesIO
 from django.core.files import File
 
-SITE_ADDR = "localhost:8000"
+SITE_ADDR = "0.0.0.0:8000"
 class Menu(models.Model):
     name = models.CharField(max_length = 32, default = "Category name", unique = True)
-    link = models.SlugField(unique = True)
+    link = models.URLField(unique = True)
     image = models.ImageField(upload_to = "menu/images/menu")
-    order = models.IntegerField(unique = False)
+    order = models.IntegerField()
     
     class Meta:
         ordering = ("order",)
@@ -27,9 +27,9 @@ class Menu(models.Model):
 class Category(models.Model):
     menu = models.ForeignKey(Menu, related_name = "category", on_delete = models.CASCADE)
     name = models.CharField(max_length = 32, default = "Group name", unique = True)
-    link = models.SlugField(unique = True)
+    link = models.URLField(unique = True)
     image = models.ImageField(upload_to = "menu/images/menu")
-    order = models.IntegerField(unique = False)
+    order = models.IntegerField()
     
     class Meta:
         ordering = ("order",)
@@ -48,9 +48,9 @@ class Category(models.Model):
 class Group(models.Model):
     category = models.ForeignKey(Category, related_name = "group", on_delete = models.CASCADE)
     name = models.CharField(max_length = 32, default = "Products name", unique = True)
-    link = models.SlugField(unique = True)
+    link = models.URLField(unique = True)
     image = models.ImageField(upload_to = "menu/images/menu")
-    order = models.IntegerField(unique = False)
+    order = models.IntegerField()
     
     class Meta:
         ordering = ("order",)
@@ -69,7 +69,7 @@ class Group(models.Model):
 class Product(models.Model):
     group = models.ForeignKey(Group, related_name = "product", on_delete = models.CASCADE)
     name = models.CharField(max_length = 50, default = "Product name", unique = True)
-    link = models.SlugField(unique = True)
+    link = models.URLField(unique = True)
     image = models.ImageField(upload_to = "menu/images/products")
     thumbnail = models.ImageField(upload_to = "menu/images/products")
     description = models.TextField(blank = True, null = True)

@@ -1,18 +1,16 @@
-from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse, Http404
 from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.shortcuts import render, redirect
+from .forms import RegisterForm, UpdateInfoForm
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.models import User, Group
 from .serializers import *
 from .models import *
-from django.shortcuts import render
 
-
-
-def index(request, *args, **kwargs):
-    return render(request, 'menu/index.html')
 
 class MenuView(generics.ListAPIView):
     queryset = Menu.objects.all()
@@ -29,8 +27,6 @@ class CategoryView(generics.ListAPIView):
             return Response(serializer.data, status = status.HTTP_200_OK)
         return Response("Category doesn't exist", status = status.HTTP_404_NOT_FOUND) #return Redirect("./")
     
-    
-
 class GroupView(generics.ListAPIView):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
@@ -78,20 +74,27 @@ class ProductView(APIView):
 class InfoView(APIView):
     serializer_class = InfoSerializer
     def get(self, request, format = None):
-        info = Info.objects.filter(id=2)
-        serializer = InfoSerializer(info, many=True)
+        info = Info.objects.get(id=2)
+        serializer = InfoSerializer(info)
         return Response(serializer.data, status = status.HTTP_200_OK)
         
-class DeliveryView(APIView):
-    serializer_class = InfoSerializer
-    def get(self, request, format = None):
-        info = Info.objects.filter(id=1)
-        serializer = InfoSerializer(info, many=True)
-        return Response(serializer.data, status = status.HTTP_200_OK)
+@login_required(login_url="/login")
+@permission_required("menu.update_info", login_url="/login", raise_exception=True)
+def update_info(request):
+    if request.method == 'PATCH':
+        form = UpdateInfoForm(request.PATCH)
+        if form.is_valid():
+            info = form.save(commit=False)
+            info.save()
+            return redirect("/info")
+    else:
+        form = UpdateInfoForm()
+
+    return render(request, 'info/update_info.html', {"form": form})
     
 @api_view(['POST'])
 def search(request):
-    query = request.data.get('query', '')
+    query = request.GET.get('q')
 
     if query:
         products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains=query))
@@ -99,3 +102,15 @@ def search(request):
         return Response(serializer.data)
     else:
         return Response({"products": []})
+
+def sign_up(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('./')
+    else:
+        form = RegisterForm()
+
+    return render(request, 'registration/sign_up.html', {"form": form})
