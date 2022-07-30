@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Post
+from .models import Info
 
 
 class RegisterForm(UserCreationForm):
@@ -14,5 +14,5 @@ class RegisterForm(UserCreationForm):
         
 class UpdateInfoForm(forms.ModelForm):
     class Meta:
-        model = Patch
+        model = Info
         fields = ["name", "text"]

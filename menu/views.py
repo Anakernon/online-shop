@@ -12,6 +12,12 @@ from .serializers import *
 from .models import *
 
 
+def home(request):
+    
+    return render(request, 'menu/carousel/index.html')
+
+    #return render(request, 'menu/carousel/home.html')
+
 class MenuView(generics.ListAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
