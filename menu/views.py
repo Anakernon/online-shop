@@ -2,6 +2,7 @@ from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework import generics, status
 from rest_framework.views import APIView
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from django.shortcuts import render, redirect
 from .forms import RegisterForm, UpdateInfoForm
@@ -11,38 +12,43 @@ from django.contrib.auth.models import User, Group
 from .serializers import *
 from .models import *
 
-
-def home(request):
-    
-    return render(request, 'menu/carousel/index.html')
-
-    #return render(request, 'menu/carousel/home.html')
-
 class MenuView(generics.ListAPIView):
-    queryset = Menu.objects.all()
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'menu/carousel/index.html'
+    
     serializer_class = MenuSerializer
+    
+    def get(self, request):
+        queryset = Menu.objects.all()
+        return Response({'dataset': queryset})
     
 class CategoryView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'menu/carousel/category.html'
  
     def get(self, request, category_link, format = None):
         if len(Menu.objects.filter(link = category_link)) > 0:
             queryset = Category.objects.filter(menu__link = category_link)
             serializer = CategorySerializer(queryset, many = True)
-            return Response(serializer.data, status = status.HTTP_200_OK)
+            return Response({"dataset" : serializer.data}, status = status.HTTP_200_OK)
         return Response("Category doesn't exist", status = status.HTTP_404_NOT_FOUND) #return Redirect("./")
     
 class GroupView(generics.ListAPIView):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'menu/carousel/category.html'
+    
     def get(self, request, category_link, group_link, format = None):
         if len(Menu.objects.filter(link = category_link)) > 0:
             if len(Category.objects.filter(menu__link = category_link, link = group_link)) > 0:
                 queryset = Group.objects.filter(category__menu__link = category_link, category__link = group_link)
                 serializer = GroupSerializer(queryset, many = True)
-                return Response(serializer.data, status = status.HTTP_200_OK)
+                return Response({"dataset" : serializer.data}, status = status.HTTP_200_OK)
             return Response("Group doesn't exist", status = status.HTTP_404_NOT_FOUND)
         return Response("Category doesn't exist", status = status.HTTP_404_NOT_FOUND)
     
@@ -50,13 +56,16 @@ class ProductListView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'menu/carousel/search.html'
+    
     def get(self, request, category_link, group_link, productlist_link, format = None):
         if len(Menu.objects.filter(link = category_link)) > 0:
             if len(Category.objects.filter(link = group_link)) > 0:
                 if len(Group.objects.filter(category__menu__link = category_link, category__link = group_link, link = productlist_link)) > 0:
                     queryset = Product.objects.filter(group__category__menu__link = category_link, group__category__link = group_link, group__link = productlist_link)
                     serializer = ProductSerializer(queryset, many = True)
-                    return Response(serializer.data, status = status.HTTP_200_OK)
+                    return Response({"dataset" : serializer.data}, status = status.HTTP_200_OK)
                 return Response("Products doesn't exist", status = status.HTTP_404_NOT_FOUND)
             return Response("Group doesn't exist", status = status.HTTP_404_NOT_FOUND)
         return Response("Category doesn't exist", status = status.HTTP_404_NOT_FOUND)
@@ -98,7 +107,7 @@ def update_info(request):
 
     return render(request, 'info/update_info.html', {"form": form})
     
-@api_view(['POST'])
+@api_view(['POST',"GET"])
 def search(request):
     query = request.GET.get('q')
 

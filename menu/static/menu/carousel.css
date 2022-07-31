@@ -4,7 +4,7 @@
 
 body {
   padding-top: 3rem;
-  padding-bottom: 3rem;
+  padding-bottom: 0rem;
   color: #5a5a5a;
 }
 
@@ -24,7 +24,7 @@ body {
 
 /* Declare heights because of positioning of img element */
 .carousel-item {
-  height: 32rem;
+  height: 16rem;
 }
 
 
@@ -48,7 +48,7 @@ body {
 ------------------------- */
 
 .featurette-divider {
-  margin: 5rem 0; /* Space out the Bootstrap <hr> more */
+  margin: 1rem 0; /* Space out the Bootstrap <hr> more */
 }
 
 /* Thin out the marketing headings */

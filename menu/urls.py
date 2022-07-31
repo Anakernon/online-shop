@@ -3,7 +3,6 @@ from .views import *
 
 app_name = "menu"
 urlpatterns = [
-    path("", home, name = "home"),
     path("", MenuView.as_view(), name = "menu"), 
     path("info/", InfoView.as_view(), name = "info"),
     path('search/', search, name = "search"),
