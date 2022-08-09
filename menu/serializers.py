@@ -6,7 +6,8 @@ class MenuSerializer(serializers.ModelSerializer):
         model = Menu
         fields = (
         "id", 
-        "name", 
+        "name",
+        "link", 
         "get_absolute_url", 
         "get_image", 
         "order")
@@ -16,7 +17,8 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = (
         "id", 
-        "name", 
+        "name",
+        "link", 
         "get_absolute_url", 
         "get_image", 
         "order")
@@ -26,7 +28,8 @@ class GroupSerializer(serializers.ModelSerializer):
         model = Group
         fields = (
         "id", 
-        "name", 
+        "name",
+        "link", 
         "get_absolute_url", 
         "get_image", 
         "order")
@@ -36,7 +39,8 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = (
         "id", 
-        "name", 
+        "name",
+        "link", 
         "get_absolute_url",
         "description",
         "price",

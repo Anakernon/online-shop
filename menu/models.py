@@ -3,6 +3,12 @@ from PIL import Image
 from io import BytesIO
 from django.core.files import File
 
+class Location(models.Model):
+    name = models.CharField(max_length = 64, default = "World", unique = True)
+    
+    def __str__(self):
+        return self.name
+    
 class Menu(models.Model):
     name = models.CharField(max_length = 32, default = "Category name", unique = True)
     link = models.SlugField(unique = True)
@@ -37,7 +43,7 @@ class Category(models.Model):
         return self.name
         
     def get_absolute_url(self):
-        return f"{self.link}/"
+        return f"{self.menu.link}/{self.link}/"
         
     def get_image(self):
         if self.image:
@@ -58,7 +64,7 @@ class Group(models.Model):
         return self.name
         
     def get_absolute_url(self):
-        return f"{self.link}/"
+        return f"{self.category.menu.link}/{self.category.link}/{self.link}/"
         
     def get_image(self):
         if self.image:
@@ -66,6 +72,7 @@ class Group(models.Model):
         return ""
         
 class Product(models.Model):
+    location = models.ManyToManyField(Location)
     group = models.ForeignKey(Group, related_name = "product", on_delete = models.CASCADE)
     name = models.CharField(max_length = 50, default = "Product name", unique = True)
     link = models.SlugField(unique = True)
@@ -82,7 +89,7 @@ class Product(models.Model):
         return self.name
         
     def get_absolute_url(self):
-        return f"{self.link}/"
+        return f"{self.group.category.menu.link}/{self.group.category.link}/{self.group.link}/{self.link}/"
         
     def get_image(self):
         if self.image:

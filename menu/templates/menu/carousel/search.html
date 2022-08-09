@@ -67,6 +67,11 @@
         white-space: nowrap;
         -webkit-overflow-scrolling: touch;
       }
+      
+      h2 a{
+          color: inherit;
+  text-decoration: inherit;
+}
     </style>
 
     
@@ -79,15 +84,23 @@
 <header>
   <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
     <div class="container-fluid">
-      <a class="navbar-brand px-3" href="\">Online-shop</a>
+      <a class="navbar-brand px-2" href="\">Online-shop</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
           <ul class="navbar-nav me-auto mb-2 mb-md-0">
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="addreass">Addreass</a>
-            </li>
+              <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" aria-current="page" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Addreass
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark">
+    {% for location in locationset %}
+    <li><a class="dropdown-item rounded-2 " href="#">{{location.name}}</a></li>
+  {% endfor %}
+  
+  </ul>
+        </li>
             <li class="nav-item">
               <a class="nav-link" aria-current="page" href="info">Info</a>
             </li>
@@ -115,6 +128,7 @@
       </div>
     </div>
   </nav>
+ 
 </header>
 
 <main>
@@ -130,19 +144,19 @@
 <div class="py-4"></div>
 
 {% load static %}
-
+{% if dataset|length > 0 %}
 {% for data in dataset %} 
 {% if forloop.counter0|divisibleby:2 %}
 
     <div class="row featurette mx-auto">
       <div class="col-md-4"></div>
       <div class="col-md-4" style="text-align:right">
-        <h2 class="featurette-heading fw-normal lh-1 " href={{data.get_absolute_url}}>{{data.name}}
+        <h2 class="featurette-heading fw-normal lh-1 "><a href="\{{data.get_absolute_url}}">{{data.name}}</a>
         <p class="text-muted px-1">${{data.price}}</p></h2>
         <p class="lead">{{data.description}}</p>
       </div>
       <div class="col-md-4 px-5">
-          <a href={{data.get_absolute_url}}>
+          <a href="\{{data.get_absolute_url}}">
         <img src="{% static data.get_thumbnail %}" class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="250" height="250"></img>
 </a>
       </div>
@@ -156,12 +170,12 @@
         
       <div class="col-md-4 order-md-2">
        <div class="col-md-4"></div>   
-        <h2 class="featurette-heading fw-normal lh-1"  href={{data.get_absolute_url}}>{{data.name}} 
+        <h2 class="featurette-heading fw-normal lh-1"><a href="\{{data.get_absolute_url}}">{{data.name}}</a> 
         <p class="text-muted px-1">${{data.price}}</p></h2>
         <p class="lead">{{data.description}}</p>
       </div>
       <div class="col-md-4 order-md-1 px-5">
-        <a href={{data.get_absolute_url}}>  
+        <a href="\{{data.get_absolute_url}}">  
         <img src="{% static data.get_thumbnail %}" class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="250" height="250"></img>
 </a>
       </div>
@@ -172,7 +186,9 @@
     {% endif %}
 {% endif %}
     {% endfor %}
-    
+    {% else %}
+    <p class="lead">Ups! Nothing found.</p>
+    {% endif %}
 <div class="py-5"></div>
    
   

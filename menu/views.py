@@ -20,7 +20,7 @@ class MenuView(generics.ListAPIView):
     
     def get(self, request):
         queryset = Menu.objects.all()
-        return Response({'dataset': queryset})
+        return Response({'dataset': queryset, "locationset" : Location.objects.all()})
     
 class CategoryView(generics.ListAPIView):
     queryset = Category.objects.all()
@@ -33,7 +33,7 @@ class CategoryView(generics.ListAPIView):
         if len(Menu.objects.filter(link = category_link)) > 0:
             queryset = Category.objects.filter(menu__link = category_link)
             serializer = CategorySerializer(queryset, many = True)
-            return Response({"dataset" : serializer.data}, status = status.HTTP_200_OK)
+            return Response({"dataset" : serializer.data, "locationset" : Location.objects.all()}, status = status.HTTP_200_OK)
         return Response("Category doesn't exist", status = status.HTTP_404_NOT_FOUND) #return Redirect("./")
     
 class GroupView(generics.ListAPIView):
@@ -41,14 +41,14 @@ class GroupView(generics.ListAPIView):
     serializer_class = GroupSerializer
     
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'menu/carousel/category.html'
+    template_name = 'menu/carousel/group.html'
     
     def get(self, request, category_link, group_link, format = None):
         if len(Menu.objects.filter(link = category_link)) > 0:
             if len(Category.objects.filter(menu__link = category_link, link = group_link)) > 0:
                 queryset = Group.objects.filter(category__menu__link = category_link, category__link = group_link)
                 serializer = GroupSerializer(queryset, many = True)
-                return Response({"dataset" : serializer.data}, status = status.HTTP_200_OK)
+                return Response({"dataset" : serializer.data, "locationset" : Location.objects.all(), "parent" :  Menu.objects.get(link=category_link)}, status = status.HTTP_200_OK)
             return Response("Group doesn't exist", status = status.HTTP_404_NOT_FOUND)
         return Response("Category doesn't exist", status = status.HTTP_404_NOT_FOUND)
     
@@ -57,7 +57,7 @@ class ProductListView(generics.ListAPIView):
     serializer_class = ProductSerializer
     
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'menu/carousel/search.html'
+    template_name = 'menu/carousel/productlist.html'
     
     def get(self, request, category_link, group_link, productlist_link, format = None):
         if len(Menu.objects.filter(link = category_link)) > 0:
@@ -65,13 +65,16 @@ class ProductListView(generics.ListAPIView):
                 if len(Group.objects.filter(category__menu__link = category_link, category__link = group_link, link = productlist_link)) > 0:
                     queryset = Product.objects.filter(group__category__menu__link = category_link, group__category__link = group_link, group__link = productlist_link)
                     serializer = ProductSerializer(queryset, many = True)
-                    return Response({"dataset" : serializer.data}, status = status.HTTP_200_OK)
+                    return Response({"dataset" : serializer.data, "locationset" : Location.objects.all(), "parent" :  Menu.objects.get(link=category_link), "parent1" :  Category.objects.get(link=group_link)}, status = status.HTTP_200_OK)
                 return Response("Products doesn't exist", status = status.HTTP_404_NOT_FOUND)
             return Response("Group doesn't exist", status = status.HTTP_404_NOT_FOUND)
         return Response("Category doesn't exist", status = status.HTTP_404_NOT_FOUND)
     
 class ProductView(APIView):
     serializer_class = ProductSerializer
+    
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'menu/carousel/product.html'
     
     def get(self, request, category_link, group_link, productlist_link, product_link, format = None):
         if len(Menu.objects.filter(link = category_link)) > 0:
@@ -80,7 +83,7 @@ class ProductView(APIView):
                     if len(Product.objects.filter(group__category__menu__link = category_link, group__category__link = group_link, group__link = productlist_link, link = product_link)) > 0:
                         product = Product.objects.filter(group__category__menu__link = category_link, group__category__link = group_link, group__link = productlist_link).get(link = product_link)
                         serializer = ProductSerializer(product)
-                        return Response(serializer.data, status = status.HTTP_200_OK)
+                        return Response({"data" : serializer.data, "locationset" : Location.objects.all(), "parent" :  Menu.objects.get(link=category_link), "parent1" :  Category.objects.get(link=group_link), "parent2" : Group.objects.get(link=productlist_link)}, status = status.HTTP_200_OK)
                     return Response("Product doesn't exist", status = status.HTTP_404_NOT_FOUND)
                 return Response("Products doesn't exist", status = status.HTTP_404_NOT_FOUND)
             return Response("Group doesn't exist", status = status.HTTP_404_NOT_FOUND)
@@ -114,9 +117,9 @@ def search(request):
     if query:
         products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains=query))
         serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
+        return render(request, 'menu/carousel/search.html', {"dataset" : serializer.data, "locationset" : Location.objects.all()})
     else:
-        return Response({"products": []})
+        return render(request, 'menu/carousel/search.html', {"locationset" : Location.objects.all()})
 
 def sign_up(request):
     if request.method == 'POST':
@@ -124,7 +127,7 @@ def sign_up(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('./')
+            return redirect('/#')
     else:
         form = RegisterForm()
 

@@ -67,12 +67,17 @@
         white-space: nowrap;
         -webkit-overflow-scrolling: touch;
       }
+      
+      h2 a{
+          color: inherit;
+  text-decoration: inherit;
+}
     </style>
 
     
     <!-- Custom styles for this template -->
     {% load static %}
-    <link href="{% static 'menu/carousel.css' %}" rel="stylesheet">
+    <link href="{% static 'menu/search.css' %}" rel="stylesheet">
   </head>
   <body>
     
@@ -90,7 +95,7 @@
             Addreass
           </a>
           <ul class="dropdown-menu dropdown-menu-dark">
-     {% for location in locationset %}
+    {% for location in locationset %}
     <li><a class="dropdown-item rounded-2 " href="#">{{location.name}}</a></li>
   {% endfor %}
   
@@ -120,15 +125,17 @@
             <a class="nav-link active" href="#">Cart</a>
           </li>
         </ul>
-        
       </div>
     </div>
-    
   </nav>
   <nav class="navbar navbar-expand-md navbar-dark  bg-dark">
    
        <a class="nav-link col-md-4" aria-current="page" href="addreass"></a>
       <a class="nav-link" style="color:firebrick" aria-current="page" href="\">Main</a>
+      <a class="nav-link px-1" style="color:firebrick" aria-current="page">/</a>
+      <a class="nav-link" style="color:firebrick" aria-current="page" href="\{{parent.link}}">{{parent.name}}</a>
+      <a class="nav-link px-1" style="color:firebrick" aria-current="page">/</a>
+      <a class="nav-link" style="color:firebrick" aria-current="page" href="\{{parent.link}}/{{parent1.link}}">{{parent1.name}}</a>
         
     
     
@@ -141,29 +148,65 @@
   <!-- Marketing messaging and featurettes
   ================================================== -->
   <!-- Wrap the rest of the page in another container to center all the content. -->
+<div class="container marketing">
+ <!-- START THE FEATURETTES -->
 
-  <div class="container marketing text-center py-4">
+   
+<div class="py-4"></div>
+
+{% load static %}
+{% if dataset|length > 0 %}
+{% for data in dataset %} 
+{% if forloop.counter0|divisibleby:2 %}
+
+    <div class="row featurette mx-auto">
+      <div class="col-md-4"></div>
+      <div class="col-md-4" style="text-align:right">
+        <h2 class="featurette-heading fw-normal lh-1 "><a href="\{{data.get_absolute_url}}">{{data.name}}</a>
+        <p class="text-muted px-1">${{data.price}}</p></h2>
+        <p class="lead">{{data.description}}</p>
+      </div>
+      <div class="col-md-4 px-5">
+          <a href="\{{data.get_absolute_url}}">
+        <img src="{% static data.get_thumbnail %}" class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="250" height="250"></img>
+</a>
+      </div>
+    </div>
+ {% if forloop.counter == dataset|length %}
+ {% else %}
+    <hr class="featurette-divider">
+    {% endif %}
+{% else %}
+    <div class="row featurette mx-auto">
+        
+      <div class="col-md-4 order-md-2">
+       <div class="col-md-4"></div>   
+        <h2 class="featurette-heading fw-normal lh-1"><a href="\{{data.get_absolute_url}}">{{data.name}}</a> 
+        <p class="text-muted px-1">${{data.price}}</p></h2>
+        <p class="lead">{{data.description}}</p>
+      </div>
+      <div class="col-md-4 order-md-1 px-5">
+        <a href="\{{data.get_absolute_url}}">  
+        <img src="{% static data.get_thumbnail %}" class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="250" height="250"></img>
+</a>
+      </div>
+    </div>
+    {% if forloop.counter == dataset|length %}
+ {% else %}
+    <hr class="featurette-divider">
+    {% endif %}
+{% endif %}
+    {% endfor %}
+    {% else %}
+    <p class="lead">Ups! Nothing found.</p>
+    {% endif %}
+<div class="py-5"></div>
+   
   
 
-    <!-- Three columns of text below the carousel -->
+    <!-- /END THE FEATURETTES -->
 
-
-        <div class="row">
-            {% load static %}
-            {% for data in dataset %}
-          <div class="col-lg-3 py-3">
-            <a href={{data.link}}>
-            <img src="{% static data.get_image %}" class="bd-placeholder-img rounded-circle"  width="180" height="180"></img>
-            </a>
-            <div class="py-1" > </div>
-            <p><a class="btn btn-secondary" style="font-size:22px" href={{data.link}}>{{data.name}} &raquo;</a></p>
-          </div><!-- /.col-lg-4 -->
-          {% endfor %}
-        </div><!-- /.row -->
-  </div>
-   
-
-
+</div>
   <!-- FOOTER -->
 
     <footer class="container text-center" >
