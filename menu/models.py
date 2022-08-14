@@ -119,3 +119,30 @@ class Product(models.Model):
 class Info(models.Model):
     name = models.CharField(max_length = 250)
     text = models.TextField(max_length = 5000)
+
+class Advertisment(models.Model):
+    title1 = models.CharField(max_length = 32)
+    text1 = models.TextField(max_length = 128)
+    link1 = models.URLField()
+    picture1 = models.ImageField(upload_to = "menu/static/menu/images/ad")
+    btn1 = models.CharField(max_length = 32, default = "Button")
+    title2 = models.CharField(max_length = 32)
+    text2 = models.TextField(max_length = 128)
+    link2 = models.URLField()
+    picture2 = models.ImageField(upload_to = "menu/static/menu/images/ad")
+    btn2 = models.CharField(max_length = 32, default = "Button")
+    
+    def get_image1(self):
+        if self.picture1:
+            return self.picture1.url[13:]
+        return ""
+     
+    def get_image2(self):
+        if self.picture2:
+            return self.picture2.url[13:]
+        return ""
+    
+    
+    
+    
+    

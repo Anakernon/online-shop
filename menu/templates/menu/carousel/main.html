@@ -1,0 +1,177 @@
+{% extends 'menu/carousel/base.html' %} {% block title %}Online shop{% endblock %}
+{% block content %}
+
+<div id="myCarousel" 
+        class="carousel slide" 
+        data-bs-ride="carousel"
+>
+    <div class="carousel-indicators">
+        <button type="button" 
+                      data-bs-target="#myCarousel" 
+                      data-bs-slide-to="0" 
+                      class="active" 
+                      aria-current="true" 
+                      aria-label="Slide 1"
+        ></button>
+        <button type="button" 
+                      data-bs-target="#myCarousel" 
+                      data-bs-slide-to="1" 
+                      aria-label="Slide 2"
+        ></button>
+        <button type="button" 
+                      data-bs-target="#myCarousel" 
+                      data-bs-slide-to="2" 
+                      aria-label="Slide 3"
+        ></button>
+    </div>
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            {% load static %}
+            {% if user.is_authenticated %}
+            <img class="bd-placeholder-img" 
+                      src="{% static adv1.get_image2 %}"
+                     width="100%" 
+                     height="100%" 
+            ></img>
+            <div class="container">
+                <div class="carousel-caption text-start">
+                    <h1>{{adv1.title2}}</h1>
+                    <p>{{adv1.text2}}</p>
+                    <p>
+                        <a class="btn btn-lg btn-primary" 
+                              href = "{{adv1.link2}}"
+                        >{{adv1.btn2}}</a>
+                    </p>
+                </div>
+            </div>
+            {% else%}
+            <img class="bd-placeholder-img" 
+                      src="{% static adv1.get_image1 %}"
+                     width="100%" 
+                     height="100%" 
+            ></img>
+            <div class="container">
+                <div class="carousel-caption text-start">
+                    <h1>{{adv1.title1}}</h1>
+                    <p>{{adv1.text1}}</p>
+                    <p>
+                        <a class="btn btn-lg btn-primary" 
+                              href = "{{adv1.link1}}"
+                        >{{adv1.btn1}}</a>
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="carousel-item">
+            {% if pic == 0 %}
+            <img class="bd-placeholder-img" 
+                     width="100%" 
+                     height="100%" 
+                     src="{% static adv2.get_image1 %}"
+            ></img>
+            <div class="container">
+                <div class="carousel-caption">
+                    <h1>{{adv2.title1}}</h1>
+                    <p>{{adv2.text1}}</p>
+                    <p>
+                        <a class="btn btn-lg btn-primary" 
+                             href="{{adv2.link1}}"
+                        >{{adv2.btn1}}</a>
+                    </p>
+                </div>
+            </div>
+            {% else %}
+            <img class="bd-placeholder-img" 
+                     width="100%" 
+                     height="100%" 
+                     src="{% static adv2.get_image2 %}"
+            ></img>
+            <div class="container">
+                <div class="carousel-caption">
+                    <h1>{{adv2.title2}}</h1>
+                    <p>{{adv2.text2}}</p>
+                    <p>
+                        <a class="btn btn-lg btn-primary" 
+                             href="{{adv2.link2}}"
+                        >{{adv2.btn2}}</a>
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="carousel-item">
+            <img src="{%static ad.get_image %}"
+                      class="bd-placeholder-img" 
+                     width="100%" 
+                     height="100%" 
+            ></img>
+            <div class="container">
+                <div class="carousel-caption text-end">
+                    <h1>{{ad.name}}.</h1>
+                    <p>{{ad.description}}.</p>
+                    <p> 
+                        <a class="btn btn-lg btn-primary" 
+                             href="{{ad.get_absolute_url}}"
+                        >{{ad.name}}</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="carousel-control-prev" 
+                  type="button"    
+                  data-bs-target="#myCarousel" 
+                  data-bs-slide="prev"
+    >
+        <span class="carousel-control-prev-icon" 
+                   aria-hidden="true"
+        ></span>
+        <span class="visually-hidden"
+        >Previous</span>
+    </button>
+    <button class="carousel-control-next" 
+                  type="button" 
+                  data-bs-target="#myCarousel" 
+                  data-bs-slide="next"
+    >
+        <span class="carousel-control-next-icon" 
+                   aria-hidden="true"
+        ></span>
+        <span class="visually-hidden"
+        >Next</span>
+    </button>
+</div>
+
+  <!-- Marketing messaging and featurettes
+  ================================================== -->
+  <!-- Wrap the rest of the page in another container to center all the content. -->
+
+<div class="container marketing text-center">
+
+    <!-- Three columns of text below the carousel -->
+
+    <div class="row">
+        {% load static %}
+        {% for data in dataset %}
+        <div class="col-lg-3">
+            <a href={{data.link}}>
+                <img src="{% static data.get_image %}" 
+                          class="bd-placeholder-img rounded-circle"  
+                          width="180" 
+                          height="180"
+                ></img>
+            </a>
+            <div class="py-1" > </div>
+            <p>
+                <a class="btn btn-secondary" 
+                      style="font-size:22px" 
+                      href={{data.link}}
+                >{{data.name}} &raquo;</a>
+            </p>
+        </div><!-- /.col-lg-4 -->
+        {% endfor %}
+    </div><!-- /.row -->
+</div>
+   
+{% endblock %}

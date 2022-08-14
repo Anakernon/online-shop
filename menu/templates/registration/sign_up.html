@@ -1,7 +1,23 @@
+{% extends 'menu/carousel/base.html' %} {% block title %}Online shop | Sign-up{% endblock %}
 {% load crispy_forms_tags %} 
-<form method="post">
-  {% csrf_token %}{{form|crispy}}
-  <p>Have an account? Login <a href="/login">Here</a>!</p>
-  <button type="submit" class="btn btn-success">Register</button>
-</form>
-
+{% block content %}
+<div class="container">
+    <div class="card mt-2">
+        <div class="card-body d-flex flex-row justify-content-center">
+            <div>
+                <form method="post">
+                    {% csrf_token %}{{form|crispy}}
+                    <p>Have an account? Login 
+                        <a href="/login"
+                        >Here</a>
+                        !
+                    </p>
+                    <button type="submit" 
+                                  class="btn btn-success"
+                    >Register</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

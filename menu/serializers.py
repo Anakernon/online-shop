@@ -51,3 +51,5 @@ class InfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Info
         fields = ("name", "text")
+
+

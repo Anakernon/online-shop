@@ -1,0 +1,26 @@
+{% extends 'menu/carousel/base.html' %} {% block title %}Online shop | Info{% endblock %}
+{% load crispy_forms_tags %} {% block content %}
+    
+<div class="container">
+    <div class="card mt-2">
+        <div class="card-body d-flex flex-row justify-content-between">
+            <div>
+                <h5 class="card-title"
+                >{{data.name}}
+                    {% if perms.menu.change_info %}   
+                    {% csrf_token %}{{form|crispy}}
+                    <a href="update">
+                        <button type="submit" 
+                                      class="btn btn-success"
+                        >Update Info</button>
+                    </a>
+                    {% endif %}
+                </h5>
+                <p>{{data.text}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="py-5" > </div>
+{% endblock %}
+  
