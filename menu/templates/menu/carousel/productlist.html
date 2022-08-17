@@ -114,8 +114,16 @@
                     <h2 class="featurette-heading fw-normal lh-1 "> 
                         <a href="\{{data.get_absolute_url}}"
                         >{{data.name}}</a>
-                        <p class="text-muted px-1"
-                        >${{data.price}}</p>
+                        <form method="post" class="text-muted py-1">
+                            {% csrf_token %}
+                            <button class="btn btn-success" 
+                                          name="add-item" 
+                                          value="{{data.id}}"
+                            >Add to cart</button>
+                            <span class="text-muted px-1">
+                                <span class="px-2"></span>
+                                ${{data.price}}</span>
+                        </form>                      
                     </h2>
                     <p class="lead"
                     >{{data.description}}</p>
@@ -141,8 +149,16 @@
                     <h2 class="featurette-heading fw-normal lh-1">
                         <a href="\{{data.get_absolute_url}}"
                         >{{data.name}}</a> 
-                        <p class="text-muted px-1"
-                        >${{data.price}}</p>
+                        <form method="post" class="text-muted py-1">
+                            <span class="text-muted px-1">
+                                ${{data.price}}</span>
+                            <span class="px-2"></span>
+                            {% csrf_token %}
+                            <button class="btn btn-success" 
+                                          name="add-item" 
+                                          value="{{data.id}}"
+                            >Add to cart</button>
+                        </form>
                     </h2>
                     <p class="lead"
                     >{{data.description}}</p>

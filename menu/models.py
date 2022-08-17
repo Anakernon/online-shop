@@ -2,9 +2,10 @@ from django.db import models
 from PIL import Image
 from io import BytesIO
 from django.core.files import File
+from django.contrib.sessions.models import Session
 
 class Location(models.Model):
-    name = models.CharField(max_length = 64, default = "World", unique = True)
+    name = models.CharField(max_length = 64, unique = True)
     
     def __str__(self):
         return self.name
@@ -142,7 +143,24 @@ class Advertisment(models.Model):
             return self.picture2.url[13:]
         return ""
     
+class CartItem(models.Model):
+    session = models.ForeignKey(Session, on_delete = models.CASCADE)
+    product = models.ForeignKey(Product, on_delete = models.CASCADE)
+    quantity = models.IntegerField()
     
+    def __str__(self):
+        return self.product.name
+        
+    def total_cost(self):
+        return self.quantity * self.product.price
     
+class Cart(models.Model):
+    session = models.ForeignKey(Session, on_delete = models.CASCADE)
+    items = models.ManyToManyField(CartItem)
+    cost = models.DecimalField(max_digits=8, decimal_places=2)
+    total_cost = models.IntegerField(default = 0)
+    
+    def count_cost(self):
+        pass
     
     

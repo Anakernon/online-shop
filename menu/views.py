@@ -104,7 +104,17 @@ class ProductListView(generics.ListAPIView):
     template_name = 'menu/carousel/productlist.html'
     
     def post(self, request, **kwargs):
-        request.session["session_location"] = request.POST.get("session-location")
+
+        if request.POST.get("session-location"):
+            request.session["session_location"] = request.POST.get("session-location")
+            
+        if request.POST.get("add-item"):
+            item = Product.objects.get(id = request.POST.get("add-item"))
+            session = Session.objects.get(session_key=request.session.session_key)
+            if not CartItem.objects.filter(session = session, product = item).count():
+                cart_item = CartItem(session = session, product = item, quantity = 1)
+                cart_item.save()
+        
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
         
     def get(self, request, category_link, group_link, productlist_link, format = None):
@@ -197,6 +207,15 @@ def search(request):
             request.session["session_location"] = Location.objects.get(pk=1).name
     
     if request.method == "POST":
+        
+        if request.POST.get("add-item"):
+            item = Product.objects.get(id = request.POST.get("add-item"))
+            session = Session.objects.get(session_key=request.session.session_key)
+            if not CartItem.objects.filter(session = session, product = item).count():
+                cart_item = CartItem(session = session, product = item, quantity = 1)
+                cart_item.save()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        
         request.session["session_location"] = request.POST.get("session-location")
 
     query = request.GET.get('q')
@@ -223,7 +242,32 @@ def sign_up(request):
 
     return render(request, 'registration/sign_up.html', {"form": form})
 
+def cart(request):
 
+    if not request.session.exists(request.session.session_key):
+        request.session.create()
+        request.session["session_location"] = Location.objects.get(pk=1).name 
+        
+    if request.method == "GET":
+        session = Session.objects.get(session_key=request.session.session_key)
+        if not Cart.objects.filter(session = session).count():
+            cart = Cart(session = session, cost = 0, total_cost = 0)
+            cart.save()
+            
+        cartdata = Cart.objects.get(session = session)
+        items = CartItem.objects.filter(session = session)
+        cartdata.items.set(items)
+        cartdata.save()
+        dataset = cartdata.items.all()
+
+        return render(request, 'menu/carousel/cart.html', {"cartdata" : cartdata, 
+                                                                                            "dataset" : dataset, 
+                                                                                            "locationset" : Location.objects.all(),
+                                                                                            "location" : request.session['session_location']
+                                                                                            })        
+            
+    if request.method == "POST":
+        pass
 
 
 
