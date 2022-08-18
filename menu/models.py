@@ -161,6 +161,16 @@ class Cart(models.Model):
     total_cost = models.IntegerField(default = 0)
     
     def count_cost(self):
-        pass
+       
+        self.cost = 0
+        self.total_cost = 0
+       
+        for item in self.items.all():
+            self.total_cost = self.total_cost + item.total_cost()
+            self.cost = self.total_cost
     
     
+
+
+
+

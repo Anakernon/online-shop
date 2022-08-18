@@ -76,6 +76,22 @@
         <div class="row featurette mx-auto"> 
             <div class="col-md-4 order-md-3 py-4"
                      style="text-align:center">
+                <div class="col-md-4 order-md-3 py-1"></div>
+                <form method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-success px-3" 
+                                  name="decrease-qty" 
+                                  value="{{data.product.id}}"
+                    >-</button>
+                    <span class="px-3"
+                               style="color:black; font-size:32px"
+                    >{{ data.quantity }}</span>
+                    <button class="btn btn-success px-3" 
+                                  name="increase-qty" 
+                                  value="{{data.product.id}}"
+                    >+</button>
+                </form>
+                <div class="col-md-4 order-md-3 py-2"></div>
                 <form method="post">
                     {% csrf_token %}
                     <button class="btn btn-danger" 
@@ -89,7 +105,11 @@
                     <a href="\{{data.product.get_absolute_url}}"
                     >{{data.product.name}}</a> 
                     <p class="text-muted px-1"
-                    >${{data.product.price}}</p>
+                    >${{data.product.price}}
+                        <span class="text-muted px-1 px-4"
+                        >|</span>
+                        ${{data.total_cost}}
+                    </p>
                 </h2>
             </div>
             <div class="col-md-4 order-md-1 px-5">
@@ -114,7 +134,7 @@
         <div class="col-md-7 py-3"
                     style="text-align:right">
                 <h2 class="featurette-heading fw-normal lh-1"
-                >Total price: {{cartdata.cost}}</h2>
+                >Total price: ${{cartdata.cost}}</h2>
             </div>
             <div class="col-md-5 py-5 px-5"
                     style="text-align:left">

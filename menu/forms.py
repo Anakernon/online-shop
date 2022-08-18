@@ -16,3 +16,4 @@ class UpdateInfoForm(forms.ModelForm):
     class Meta:
         model = Info
         fields = ["name", "text"]
+

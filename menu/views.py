@@ -258,6 +258,7 @@ def cart(request):
         items = CartItem.objects.filter(session = session)
         cartdata.items.set(items)
         cartdata.save()
+        cartdata.count_cost()
         dataset = cartdata.items.all()
 
         return render(request, 'menu/carousel/cart.html', {"cartdata" : cartdata, 
@@ -267,7 +268,28 @@ def cart(request):
                                                                                             })        
             
     if request.method == "POST":
-        pass
+        
+        if request.POST.get("increase-qty"):
+            item = CartItem.objects.get(product = request.POST.get("increase-qty"))
+            item.quantity = item.quantity + 1
+            item.save()
+            
+        if request.POST.get("decrease-qty"):
+            item = CartItem.objects.get(product = request.POST.get("decrease-qty"))
+            if item.quantity > 1:
+                item.quantity = item.quantity - 1
+                item.save()
+            else:
+                item.delete()
+                
+        if request.POST.get("remove-item"):
+            item = CartItem.objects.get(product = request.POST.get("remove-item"))
+            item.delete()
+            
+        if request.POST.get("submit-cart"):
+            return HttpResponseRedirect("http://127.0.0.1:8000/submit")
+        
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
 
