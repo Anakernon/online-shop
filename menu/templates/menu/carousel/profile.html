@@ -1,0 +1,192 @@
+{% extends 'menu/carousel/base.html' %} {% block title %}Online shop | Profile{% endblock %}
+{% block style %}
+<style>
+    .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+    }
+
+    @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+            font-size: 3.5rem;
+        }
+    }
+
+    .b-example-divider {
+        height: 3rem;
+        background-color: rgba(0, 0, 0, .1);
+        border: solid rgba(0, 0, 0, .15);
+        border-width: 1px 0;
+        box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+    }
+
+    .b-example-vr {
+        flex-shrink: 0;
+        width: 1.5rem;
+        height: 100vh;
+    }
+
+    .bi {
+        vertical-align: -.125em;
+        fill: currentColor;
+    }
+
+    .nav-scroller {
+        position: relative;
+        z-index: 2;
+        height: 2.75rem;
+        overflow-y: hidden;
+    }
+
+    .nav-scroller .nav {
+        display: flex;
+        flex-wrap: nowrap;
+        padding-bottom: 1rem;
+        margin-top: -1px;
+        overflow-x: auto;
+        text-align: center;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+  
+    h2 a{
+        color: inherit;
+        text-decoration: inherit;
+    }
+</style>
+
+<!-- Custom styles for this template -->
+{% load static %}
+<link href="{% static 'menu/search.css' %}" 
+          rel="stylesheet"
+>
+{% endblock %}
+
+{% block navigation %}
+ <nav class="navbar navbar-expand-md navbar-dark  bg-dark">
+    <a class="nav-link col-md-3" 
+          aria-current="page" 
+          href="addreass"
+    ></a>
+    <form method="post">
+                    {% csrf_token %}
+        <button class="nav-link px-5" 
+              style="color:firebrick" 
+              aria-current="page"
+              name = "User-settings" 
+              value = "User-settings"
+        >User settings</button>
+    </form>
+    <form method="post">
+                    {% csrf_token %}
+        <button class="nav-link px-5" 
+              style="color:firebrick" 
+              aria-current="page"
+              name = "Orders-in-queue" 
+              value = "Orders-in-queue"
+        >Orders in queue</button>
+    </form>
+    <form method="post">
+                    {% csrf_token %}
+        <button class="nav-link px-5" 
+              style="color:firebrick" 
+              aria-current="page"
+              name = "Complete-orders" 
+              value = "Complete-orders"
+        >Complete orders</button>
+    </form>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container marketing">
+    
+    <!-- START THE FEATURETTES -->
+    
+    <div class="py-4"></div>
+    {% if page == "Orders-in-queue" %}
+    {% for data in dataset %}
+    <div class="row featurette mx-auto"> 
+            <div class="py-4"
+                     style="text-align:center">      
+                <h2>Order N:{{data.cart_id}} for {{data.paid_amount}} cents</h2>
+            </div>
+            <div class="col-md-6"
+                     style = "text-align:right; word-spacing:9999px;"
+             >Product {{data.product_names}}</div>
+            <div class="col-md-1"
+                     style = "text-align:center; word-spacing:9999px;"
+             >Quantity {{data.product_quantities}}</div>
+            <div class="col-md-5"
+                     style = "text-align:left; word-spacing:9999px;"
+             >$ {{data.product_prices}}</div>
+        </div>
+        {% if forloop.counter == dataset|length %}
+        {% else %}
+        <hr class="featurette-divider">
+        {% endif %}
+    {% empty %}
+    <p class="lead"
+    >Any orders in queue. You are always welcome to buy something!</p>
+    {% endfor %}    
+    
+    {% elif page == "User-settings" %}
+    {% load crispy_forms_tags %}
+    <div class="row featurette mx-auto"> 
+        <div class="col-md-3"></div>
+        <div class="col-md-6 py-4"
+                 style="text-align:center"> 
+            <form method="post">
+                {% csrf_token %}{{dataset|crispy}}
+                <button type="submit" 
+                              class="btn btn-success"
+                              name = "Save-profile" 
+                              value = "Save-profile"
+                >Save</button>
+            </form>
+        </div>
+        <div class="col-md-3">
+            <form method="post"
+                        style="text-align:center">
+                {% csrf_token %}
+                <button type="submit" 
+                              class="btn btn-danger"
+                              name = "logout" 
+                              value = "logout"
+                >Log out</button>
+            </form>
+        </div>
+    </div>
+    {% elif page == "Complete-orders" %}
+    {% for data in dataset %}
+    <div class="row featurette mx-auto"> 
+            <div class="py-4"
+                     style="text-align:center">      
+                <h2>Order N:{{data.cart_id}} for {{data.paid_amount}} cents</h2>
+            </div>
+            <div class="col-md-6"
+                     style = "text-align:right; word-spacing:9999px;"
+             >Product {{data.product_names}}</div>
+            <div class="col-md-1"
+                     style = "text-align:center; word-spacing:9999px;"
+             >Quantity {{data.product_quantities}}</div>
+            <div class="col-md-5"
+                     style = "text-align:left; word-spacing:9999px;"
+             >$ {{data.product_prices}}</div>
+        </div>
+        {% if forloop.counter == dataset|length %}
+        {% else %}
+        <hr class="featurette-divider">
+        {% endif %}
+    {% empty %}
+    <p class="lead"
+    >Any complete orders. You are always welcome to buy something!</p>
+    {% endfor %}
+    {% endif %}
+    <div class="py-5"></div>
+</div>
+{% endblock %}
+

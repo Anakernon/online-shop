@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     
     "rest_framework",
     "menu.apps.MenuConfig",
+    "payments.apps.PaymentsConfig",
     
     'crispy_forms',
     'crispy_bootstrap5'
@@ -48,6 +49,12 @@ INSTALLED_APPS = [
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+SESSION_ENGINE = "shop.session_backend"
+
+#AUTH_USER_MODEL = "shop.userphone"
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -132,5 +139,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = '/#'
-LOGOUT_REDIRECT_URL = '/login'
+LOGIN_REDIRECT_URL = '/profile'

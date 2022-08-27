@@ -5,14 +5,19 @@ from rest_framework.views import APIView
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from django.shortcuts import render, redirect
-from .forms import RegisterForm, UpdateInfoForm
+from .forms import *
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User, Group
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from .serializers import *
 from .models import *
 import random
+import sys
+import os.path
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname("Documents/online-shop"), os.path.pardir)))
+import payments.models as pay_db
 
 class MenuView(generics.ListAPIView):
     renderer_classes = [TemplateHTMLRenderer]
@@ -144,7 +149,17 @@ class ProductView(APIView):
     template_name = 'menu/carousel/product.html'
     
     def post(self, request, **kwargs):
-        request.session["session_location"] = request.POST.get("session-location")
+
+        if request.POST.get("session-location"):
+            request.session["session_location"] = request.POST.get("session-location")
+            
+        if request.POST.get("add-item"):
+            item = Product.objects.get(id = request.POST.get("add-item"))
+            session = Session.objects.get(session_key=request.session.session_key)
+            if not CartItem.objects.filter(session = session, product = item).count():
+                cart_item = CartItem(session = session, product = item, quantity = 1)
+                cart_item.save()
+        
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
         
     def get(self, request, category_link, group_link, productlist_link, product_link, format = None):
@@ -248,8 +263,9 @@ def cart(request):
         request.session.create()
         request.session["session_location"] = Location.objects.get(pk=1).name 
         
+    session = Session.objects.get(session_key=request.session.session_key)
+        
     if request.method == "GET":
-        session = Session.objects.get(session_key=request.session.session_key)
         if not Cart.objects.filter(session = session).count():
             cart = Cart(session = session, cost = 0, total_cost = 0)
             cart.save()
@@ -257,8 +273,8 @@ def cart(request):
         cartdata = Cart.objects.get(session = session)
         items = CartItem.objects.filter(session = session)
         cartdata.items.set(items)
-        cartdata.save()
         cartdata.count_cost()
+        cartdata.save()
         dataset = cartdata.items.all()
 
         return render(request, 'menu/carousel/cart.html', {"cartdata" : cartdata, 
@@ -270,12 +286,12 @@ def cart(request):
     if request.method == "POST":
         
         if request.POST.get("increase-qty"):
-            item = CartItem.objects.get(product = request.POST.get("increase-qty"))
+            item = CartItem.objects.get(product = request.POST.get("increase-qty"), session = session)
             item.quantity = item.quantity + 1
             item.save()
             
         if request.POST.get("decrease-qty"):
-            item = CartItem.objects.get(product = request.POST.get("decrease-qty"))
+            item = CartItem.objects.get(product = request.POST.get("decrease-qty"), session = session)
             if item.quantity > 1:
                 item.quantity = item.quantity - 1
                 item.save()
@@ -283,13 +299,115 @@ def cart(request):
                 item.delete()
                 
         if request.POST.get("remove-item"):
-            item = CartItem.objects.get(product = request.POST.get("remove-item"))
+            item = CartItem.objects.get(product = request.POST.get("remove-item"), session = session)
             item.delete()
             
         if request.POST.get("submit-cart"):
             return HttpResponseRedirect("http://127.0.0.1:8000/submit")
         
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+@login_required(login_url="/login")
+def profile(request):
+    
+    if not request.session.exists(request.session.session_key):
+        request.session.create()
+        request.session["session_location"] = Location.objects.get(pk=1).name 
+        
+    user_id = request.user.id
+    
+    if request.method == "GET":
+        ordersInQ = pay_db.b4Q.objects.filter(user_id = user_id)
+        page = "Orders-in-queue"
+         
+        return render(request, "menu/carousel/profile.html", {
+                                                                                                    "page" : page,
+                                                                                                    "dataset" : ordersInQ,
+                                                                                                    "locationset" : Location.objects.all(),
+                                                                                                    "location" : request.session['session_location']
+         })
+
+    if request.method == "POST":
+        page = ""
+        dataset = None
+        
+        if request.POST.get("User-settings"):
+            page = "User-settings"
+            dataset = ProfileSettingsForm() 
+            
+        if request.POST.get("Save-profile"):
+            page = "User-settings"
+            dataset = ProfileSettingsForm(request.POST)
+            userinst = request.user
+            if dataset.is_valid():
+                if dataset.cleaned_data["username"]:
+                    userinst.username = dataset.cleaned_data["username"]
+                    userinst.save()
+                if dataset.cleaned_data["first_name"]:
+                    userinst.first_name = dataset.cleaned_data["first_name"]
+                    userinst.save()
+                if dataset.cleaned_data["last_name"]:
+                    userinst.last_name = dataset.cleaned_data["last_name"]
+                    userinst.save()
+                if dataset.cleaned_data["email"]:
+                    userinst.email = dataset.cleaned_data["email"]
+                    userinst.save()
+                if dataset.cleaned_data["phone"]:
+                    userinst.extensions.phone = dataset.cleaned_data["uphone"]
+                    userinst.save()
+                if dataset.cleaned_data["address"]:
+                    userinst.address = dataset.cleaned_data["address"]
+                    userinst.save()
+                if dataset.cleaned_data["password"]:
+                    userinst.set_password(dataset.cleaned_data["password"])
+                    userinst.save()
+                    
+        if request.POST.get("logout"):
+            logout(request)
+            if not request.session.exists(request.session.session_key):
+                request.session.create()
+                request.session["session_location"] = Location.objects.get(pk=1).name
+            return HttpResponseRedirect("http://127.0.0.1:8000")
+            
+        if request.POST.get("Orders-in-queue"):
+            page = "Orders-in-queue"
+            dataset = pay_db.b4Q.objects.filter(user_id = user_id)
+            
+        if request.POST.get("Complete-orders"):
+            page = "Complete-orders"
+            dataset = pay_db.CompleteOrder.objects.filter(user_id = user_id)
+                    
+    return render(request, "menu/carousel/profile.html", {
+                                                                                                    "page" : page,
+                                                                                                    "dataset" : dataset,
+                                                                                                    "locationset" : Location.objects.all(),
+                                                                                                    "location" : request.session['session_location']
+             
+         })
+
+@login_required(login_url="/login")
+def stat(request):
+    if request.user.is_staff:
+        
+        database = pay_db.b4Q.objects.all()
+        dates = []
+        
+        for element in database:
+            dates.append(str(element.date_created.day) + " / " + str(element.date_created.month) + " / " + str(element.date_created.year))
+        
+        return render(request, "stat.html", {
+                                                                    "dates" : dates,
+                                                                    })
+        
+    return HttpResponseForbidden()
+
+
+
+
+
+
+
+
 
 
 

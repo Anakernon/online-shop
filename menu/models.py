@@ -166,8 +166,19 @@ class Cart(models.Model):
         self.total_cost = 0
        
         for item in self.items.all():
-            self.total_cost = self.total_cost + item.total_cost()
-            self.cost = self.total_cost
+            self.total_cost = self.total_cost + item.total_cost() * 100
+            self.cost = self.total_cost / 100
+            self.total_cost = int(self.total_cost)
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
     
     
 

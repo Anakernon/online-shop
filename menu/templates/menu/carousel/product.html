@@ -113,10 +113,17 @@
         <div class="col-md-4 order-md-2">
             <div class="col-md-1"></div>   
             <h2 class="featurette-heading fw-normal lh-1"
-            >{{data.name}} 
-                <p class="text-muted px-1"
-                >${{data.price}}</p>
-            </h2>
+            >{{data.name}}</h2>
+            <form method="post" class="text-muted py-1">
+                <span class="text-muted px-1">
+                    ${{data.price}}</span>
+                <span class="px-2"></span>
+                {% csrf_token %}
+                <button class="btn btn-success" 
+                              name="add-item" 
+                              value="{{data.id}}"
+                >Add to cart</button>
+            </form>
             <p class="lead"
             >{{data.description}}</p>
         </div>
